@@ -12,7 +12,7 @@
 	
 	<body>
 	
-	<div id="lyric-panel" class="center">
+	<div id="lyric-panel" class="center" style="display:none;">
 			Lyrics Go Here</br>
 			Line 2
 	</div>
@@ -22,17 +22,17 @@
 const bcp = new BroadcastChannel('obs-lyrics');
 
 bcp.onmessage = (messageEvent) => {
-    // If our broadcast message is 'update_title' then get the new title from localStorage
 	//alert(messageEvent.data.action);
     if (messageEvent.data.action === 'update_title') {
-      // localStorage is domain specific so when it changes in one window it changes in the other
-      //alert(messageEvent.data.text);
-	  	  
-	  
+      //alert(messageEvent.data.text); 
 	  $("#lyric-panel").html(messageEvent.data.text);
-	  
-	  
     }
+	if (messageEvent.data.action === 'hide') {
+		$("#lyric-panel").fadeOut(400);
+	}
+	if (messageEvent.data.action === 'show') {
+		$("#lyric-panel").fadeIn(400);
+	}
   }
 
 </script>

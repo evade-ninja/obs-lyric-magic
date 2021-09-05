@@ -10,13 +10,21 @@
 	}
 
 	var lyrics = [];
-	var index = 0;
+	var index = -1;
 
 	function ingest(){
-		lyrics = $("#words").val().split("\n");
+		words = $("#words").val().split("\n");
 		//alert(lyrics.length);
-		index = 0
-		$("#lindex").html(index + "/" + lyrics.length/2);
+		index = -1
+
+		lyrics = [$("#title").val()];
+		
+		for(let x=0; x<words.length; x+=2){
+			lyrics.push(words[x] + "<br>" + words[x+1]);
+		}
+
+		//lyrics.splice(0,0, $("#title").val());
+		$("#lindex").html(index + "/" + lyrics.length);
 	}
 
 	function save(){
@@ -38,14 +46,24 @@
 	}
 
 	function sendLyric(){
-		var lyr = "";
-		if(index < lyrics.length){
-			lyr = lyrics[index] + "<br>" + lyrics[index+1];
-			index += 2;
+		if(index == -1){
+			bcp.postMessage({'action':'update_title','text': lyrics[0]});
+			bcp.postMessage({'action':'show'});
+			index = 0;
+			index++;
+			$("#lindex").html(index + "/" + lyrics.length);
+			return;
 		}
-			//alert(lyr);
-		bcp.postMessage({'action':'update_title','text': lyr });
-		$("#lindex").html(index + "/" + lyrics.length/2);
+
+		if(index >= lyrics.length){
+			//time to hide!
+			bcp.postMessage({'action':'hide'});
+			return;
+		}
+
+		bcp.postMessage({'action':'update_title','text': lyrics[index]});
+		index++;
+		$("#lindex").html(index + "/" + lyrics.length);
 	}
 
 	function loadSlots(){
