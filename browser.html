@@ -23,10 +23,12 @@ const bcp = new BroadcastChannel('obs-lyrics');
 
 bcp.onmessage = (messageEvent) => {
     // If our broadcast message is 'update_title' then get the new title from localStorage
-	alert(messageEvent.data.action);
+	//alert(messageEvent.data.action);
     if (messageEvent.data.action === 'update_title') {
       // localStorage is domain specific so when it changes in one window it changes in the other
-      //alert("hello world");
+      //alert(messageEvent.data.text);
+	  	  
+	  
 	  $("#lyric-panel").html(messageEvent.data.text);
 	  
 	  
