@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-  	<!--Animated Lower Thirds v1.6-->
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -12,16 +11,16 @@
 	
 	<body>
 	
-	<div id="lyric-panel" class="center" >
+	<div id="lyric-panel" class="center" style="display:none;" >
 		<div id="lyric-panel" class="center" style="display:none;">
 		
 	</div>
 </body>
 
 <script type="text/javascript">
-const bcp = new BroadcastChannel('obs-lyrics');
+const mindcontrol = new BroadcastChannel('obs-lyrics');
 
-bcp.onmessage = (messageEvent) => {
+mindcontrol.onmessage = (messageEvent) => {
 	//alert(messageEvent.data.action);
     if (messageEvent.data.action === 'update_title') {
       //alert(messageEvent.data.text); 

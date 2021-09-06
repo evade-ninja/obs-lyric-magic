@@ -5,9 +5,9 @@
 		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<script type="text/javascript">
-	const bcp = new BroadcastChannel('obs-lyrics');
+	const mindcontrol = new BroadcastChannel('obs-lyrics');
 
-	bcp.onmessage = function (ev) {
+	mindcontrol.onmessage = function (ev) {
 		("#lyric-panel").html(ev.data);
 		
 	}
@@ -62,8 +62,8 @@
 
 	function sendLyric(){
 		if(index == -1){
-			bcp.postMessage({'action':'update_title','text': lyrics[0]});
-			bcp.postMessage({'action':'show'});
+			mindcontrol.postMessage({'action':'update_title','text': lyrics[0]});
+			mindcontrol.postMessage({'action':'show'});
 			index = 0;
 			index++;
 			$("#lindex").html(index + "/" + lyrics.length);
@@ -72,11 +72,11 @@
 
 		if(index >= lyrics.length){
 			//time to hide!
-			bcp.postMessage({'action':'hide'});
+			mindcontrol.postMessage({'action':'hide'});
 			return;
 		}
 
-		bcp.postMessage({'action':'update_title','text': lyrics[index]});
+		mindcontrol.postMessage({'action':'update_title','text': lyrics[index]});
 		index++;
 		$("#lindex").html(index + "/" + lyrics.length);
 	}
@@ -133,8 +133,8 @@
 	</div>
 
 	<div class="input-group" style="margin-top: 30px;">
-		<button onclick="bcp.postMessage({'action':'hide'});" class="danger">Force Hide</button>
-		<button onclick="bcp.postMessage({'action':'show'});" class="primary">Force Show</button>
+		<button onclick="mindcontrol.postMessage({'action':'hide'});" class="danger">Force Hide</button>
+		<button onclick="mindcontrol.postMessage({'action':'show'});" class="primary">Force Show</button>
 	</div>
 
 	<button onclick="clearStorage();" class="danger" style="display:none;">CLEAR</button>
