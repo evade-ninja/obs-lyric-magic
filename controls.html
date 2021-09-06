@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<script type="text/javascript">
 	const bcp = new BroadcastChannel('obs-lyrics');
 
@@ -19,17 +22,29 @@
 
 		lyrics = [$("#title").val()];
 		
-		for(let x=0; x<words.length; x+=2){
-			lyrics.push(words[x] + "<br>" + words[x+1]);
+		for(let x=0; x<words.length; x){
+			if(words[x].startsWith("###")){
+				lyrics.push(words[x].replace("###",""));
+				x++;
+			}else{
+				lyrics.push(words[x] + "<br>" + words[x+1]);
+				x+=2;
+			}
 		}
-
-		//lyrics.splice(0,0, $("#title").val());
 		$("#lindex").html(index + "/" + lyrics.length);
 	}
 
 	function save(){
-		console.log($("#slots").val());
+		//console.log($("#slots").val());
+
+		var s=$("#slots").val();
+		
 		localStorage.setItem($("#slots").val(), JSON.stringify({'title':$("#title").val(), 'lyrics':$("#words").val()}));
+
+		loadSlots();
+		$("#slots").val(s);
+		ingest();
+
 	}
 
 	function load(){
@@ -70,7 +85,7 @@
 		//var opts = "";
 		$("#slots").html("");
 		for(let x = 1; x<11; x++){
-			console.dir(localStorage.getItem("Song" + x));
+			//console.dir(localStorage.getItem("Song" + x));
 			var s = JSON.parse(localStorage.getItem("Song" + x));
 			if(s){
 				$("#slots").append(new Option(s.title, "Song"+x));
@@ -87,40 +102,42 @@
 
 
 	</script>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		
 		<title>Lyric Magic</title>
-		<link rel="stylesheet" href="controlpanel.css">
+		<link rel="stylesheet" href="controls.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	</head>
 	<body>
-	<div id="slotselect">
+	<div class="input-group">
+		<div id="slotselect">
 		 <label for="slots">Song:</label>
 			<select id="slots" name="slots">
 			</select> 
+		</div>
 	</div>
 	<div>
-		<label for="title">Title:</label>
-		<input type="text" id="title" name="title">
+		<div class="input-group"><label for="title">Title:</label></div>
+		<div class="input-group"><input type="text" id="title" name="title"></div>
 		<label for="words" name="words">Lyrics:</label>
 		<textarea id="words" rows="5"></textarea>
-		<button onclick="save();">Save</button>
-		<button onclick="load();">Load</button>
+		<button onclick="save();" class="success">Save</button>
+		<button onclick="load();" class="warning">Load</button>
 	</div>
 	<div>
 	<span id="lindex">0/0</span>
 	
 	</div>
-		
-		
-		
-		
-		
-		<button onclick="sendLyric();">SEND</button>
+	<div class="input-group">
+		<button onclick="sendLyric();" class="danger bigger">PREVIOUS</button>
+		<button onclick="sendLyric();" class="primary bigger">ADVANCE</button>
 	</div>
 
-	<button onclick="clearStorage();">CLEAR</button>
+	<div class="input-group" style="margin-top: 30px;">
+		<button onclick="bcp.postMessage({'action':'hide'});" class="danger">Force Hide</button>
+		<button onclick="bcp.postMessage({'action':'show'});" class="primary">Force Show</button>
+	</div>
+
+	<button onclick="clearStorage();" class="danger" style="display:none;">CLEAR</button>
 	
 
 	</body>

@@ -8,13 +8,17 @@ body{
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 250px;
+	min-height: 250px;
 	/*background-color: #969696;*/
-	background-color: rgba(204,204,204,.50);
-	font-size: 4.5em;
+	background-color: rgba(50,50,50,.75);
+	font-size: 4.8em;
 	margin-top: 830px;
-	-webkit-text-stroke-width: 3px;
+	-webkit-text-stroke-width: 2px;
 	-webkit-text-stroke-color: black;
 	color: white;
 	text-align: center;
+}
+
+.small{
+	font-size: 1em;
 }
