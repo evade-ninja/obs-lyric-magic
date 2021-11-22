@@ -4,6 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<script src="hotkeys.js"></script>
 	<script type="text/javascript">
 	const mindcontrol = new BroadcastChannel('obs-lyrics');
 
@@ -11,6 +12,9 @@
 		("#lyric-panel").html(ev.data);
 		
 	}
+
+	var hotkeyLyricSwitch1Old = hotkeyLyricSwitch1;
+	var hotkeyLyricSwitch2Old = hotkeyLyricSwitch2;
 
 	var lyrics = [];
 	var index = -1;
@@ -36,6 +40,73 @@
 
 	function save(){
 		//console.log($("#slots").val());
+
+
+
+		var lyr = $("#words").val();
+
+		lyr = lyr.replace(/\n\n\s+/g,"\n");
+		lyr = lyr.replace(/#/g, "");
+		lyr = lyr.trim();
+		
+		
+		var l2 = [];
+		l2 = lyr.split("\n");
+		var wds = [];
+		lines = 0;
+		for(var i=0; i <l2.length; i++){
+			console.log(i);
+			let item = l2[i];
+			if(item.length > 40){
+				//split into two
+
+				//find the , or ; in the middle of the line
+				var cpos = item.indexOf(",", (item.length/2)-3);
+				var semipos = item.indexOf(";", (item.length/2)-3);
+				var spos = item.indexOf(" ", (item.length/2)-3);
+				
+				var knife = item.length;
+				if(semipos > 0 && semipos < item.length * 0.75){
+					knife = semipos+1;
+				}else if(cpos > 0 && cpos < item.lengthc * 0.75){
+					knife = cpos+1;
+				}else{
+					knife = spos;
+				}
+				
+				console.log(l2[i] + "/" + l2[i+1])
+				wds.push(item.slice(0,knife));
+				lines++;
+				console.log(l2[i+1]);
+				if(i + 1 < l2.length && (l2[i+1].match(/^\d/)) && (lines+1%2 == 0)){
+					wds.push("###" + item.slice(knife,item.length));		 
+				}
+				else{
+					//lines++;					
+					wds.push(item.slice(knife,item.length));
+				}
+
+			}else{
+				//otherwise keep as is
+				lines++;
+				console.log(lines % 2);
+				if((i+1 < l2.length) && (l2[i+1].match(/^\d/)) &&  (lines%2 > 0)){
+					wds.push("###" + item.slice(knife,item.length));
+				}
+				else if((i+1 == l2.length) && (lines%2 > 0)){
+					wds.push("###" + item.slice(knife,item.length));
+				}
+				else
+				{
+					wds.push(item);
+				}
+			}
+		}
+	
+		$("#words").val(wds.join("\n"));
+
+
+
 
 		var s=$("#slots").val();
 		
@@ -65,7 +136,7 @@
 			mindcontrol.postMessage({'action':'update_title','text': lyrics[0]});
 			mindcontrol.postMessage({'action':'show'});
 			index = 0;
-			index++;
+			//index++;
 			$("#lindex").html(index + "/" + lyrics.length);
 			return;
 		}
@@ -76,8 +147,28 @@
 			return;
 		}
 
-		mindcontrol.postMessage({'action':'update_title','text': lyrics[index]});
 		index++;
+		mindcontrol.postMessage({'action':'update_title','text': lyrics[index]});
+		$("#lindex").html(index + "/" + lyrics.length);
+	}
+	
+	function sendLyricBack(){
+		if(index > lyrics.length){
+			index = lyrics.length;
+			mindcontrol.postMessage({'action':'update_title','text': lyrics[index]});
+			mindcontrol.postMessage({'action':'show'});
+			$("#lindex").html(index + "/" + lyrics.length);
+			return;
+		}
+
+		if(index <= -1){
+			//time to hide!
+			mindcontrol.postMessage({'action':'hide'});
+			return;
+		}
+
+		index--;
+		mindcontrol.postMessage({'action':'update_title','text': lyrics[index]});
 		$("#lindex").html(index + "/" + lyrics.length);
 	}
 
@@ -128,7 +219,7 @@
 	
 	</div>
 	<div class="input-group">
-		<button onclick="sendLyric();" class="danger bigger">PREVIOUS</button>
+		<button onclick="sendLyricBack();" class="danger bigger">PREVIOUS</button>
 		<button onclick="sendLyric();" class="primary bigger">ADVANCE</button>
 	</div>
 
@@ -143,6 +234,37 @@
 	</body>
 	<script>
 	loadSlots();
+
+	function checkHotKeys(){
+		if (hotkeyLyricSwitch1 != hotkeyLyricSwitch1Old){
+			sendLyric();	
+			hotkeyLyricSwitch1Old = hotkeyLyricSwitch1;
+		}
+
+		if (hotkeyLyricSwitch2 != hotkeyLyricSwitch2Old){
+			sendLyricBack();	
+			hotkeyLyricSwitch2Old = hotkeyLyricSwitch2;
+		}
+
+	}
+
+
+	function updateHotkeys() {
+		src = 'hotkeys.js';
+		$('script[src="' + src + '"]').remove();
+		var head= document.getElementsByTagName('head')[0];
+		var script= document.createElement('script');
+		script.src= src;
+		head.appendChild(script);
+	}
+
+
+	function checkUpdates() {
+		updateHotkeys();
+		checkHotKeys();
+	}
+
+	setInterval(checkUpdates, 200);
 	</script>
 
 
