@@ -49,15 +49,40 @@
 		lyr = lyr.replace(/#/g, "");
 		lyr = lyr.trim();
 		
-		
+		//find the chorus block
+
+		var choruspos = -1;
+		choruspos = lyr.indexOf("[Chorus]");
+		if(choruspos > -1){
+			//we have a chorus!
+			var chorus = /\[Chorus\](.*?)\d/s.exec(lyr);
+			console.log(chorus[1]);
+
+			var verses = [];
+
+			for(let i = 3; i < 10; i++){
+				var vpos = lyr.indexOf("" + i);
+				if(vpos > 0){
+					lyr = lyr.replace("" + i, chorus[1].trim() + "\n" + i);
+				}
+			}
+
+			lyr = lyr + chorus[1];
+		}
+
+		lyr = lyr.replace("[Chorus]\n","");
+		lyr = lyr.trim();
+		//console.log(lyr);
+		//return;
+	
 		var l2 = [];
 		l2 = lyr.split("\n");
 		var wds = [];
-		lines = 0;
+		//lines = 0;
 		for(var i=0; i <l2.length; i++){
-			console.log(i);
+			//console.log("Line" + i);
 			let item = l2[i];
-			if(item.length > 40){
+			if(item.length > 35){
 				//split into two
 
 				//find the , or ; in the middle of the line
@@ -74,32 +99,46 @@
 					knife = spos;
 				}
 				
-				console.log(l2[i] + "/" + l2[i+1])
+				//console.log("Line: " + i + " " + l2[i]);
+				//lines++;
 				wds.push(item.slice(0,knife));
-				lines++;
-				console.log(l2[i+1]);
-				if(i + 1 < l2.length && (l2[i+1].match(/^\d/)) && (lines+1%2 == 0)){
-					wds.push("###" + item.slice(knife,item.length));		 
+				wds.push(item.slice(knife,item.length));
+				//lines++;
+				//console.log(l2[i+1]);
+				/*if(i + 1 < l2.length && (l2[i+1].match(/^\d/)) && (lines%2 > 0)){
+					console.log("next line is new verse and is odd");
+					wds.push("###1" + item.slice(knife,item.length));		 
 				}
 				else{
 					//lines++;					
 					wds.push(item.slice(knife,item.length));
-				}
+				}*/
 
 			}else{
 				//otherwise keep as is
-				lines++;
-				console.log(lines % 2);
-				if((i+1 < l2.length) && (l2[i+1].match(/^\d/)) &&  (lines%2 > 0)){
-					wds.push("###" + item.slice(knife,item.length));
+				//lines++;
+				//console.log("Intact Line: " + i + " " + l2[i]);
+				
+				wds.push(item);
+				/*if((i+1 < l2.length) && (l2[i+1].match(/^\d/)) &&  (lines%2 > 0)){
+					console.log("next line is new verse and is odd");
+					wds.push("###2" + item.slice(knife,item.length));
 				}
 				else if((i+1 == l2.length) && (lines%2 > 0)){
-					wds.push("###" + item.slice(knife,item.length));
+					wds.push("###3" + item.slice(knife,item.length));
 				}
 				else
 				{
 					wds.push(item);
-				}
+				}*/
+			}
+		}
+
+		for(var x=0; x <wds.length; x++){
+			console.log(x + "/" + wds[x] + " " + (x+1)%2);
+			if(((x+1 < wds.length) && (wds[x+1].match(/^\d/)) && (x+1%2>0)) || (((x+1)%2>0) && (x+1 == wds.length))){
+				//this line is odd
+				wds[x] = "###" + wds[x];
 			}
 		}
 	
