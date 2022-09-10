@@ -82,12 +82,12 @@
 		for(var i=0; i <l2.length; i++){
 			//console.log("Line" + i);
 			let item = l2[i];
-			if(item.length > 35){
+			if(item.length > 36){
 				//split into two
 
 				//find the , or ; in the middle of the line
 				var cpos = item.indexOf(",", (item.length/2)-3);
-				var semipos = item.indexOf(";", (item.length/2)-3);
+				var semipos = item.indexOf(";", (item.length/2)-6);
 				var spos = item.indexOf(" ", (item.length/2)-3);
 				
 				var knife = item.length;
@@ -133,12 +133,13 @@
 				}*/
 			}
 		}
-
+		var singles = 0;
 		for(var x=0; x <wds.length; x++){
-			console.log(x + "/" + wds[x] + " " + (x+1)%2);
-			if(((x+1 < wds.length) && (wds[x+1].match(/^\d/)) && (x+1%2>0)) || (((x+1)%2>0) && (x+1 == wds.length))){
+			console.log(x + "/" + wds[x] + " " + (x+1+singles)%2);
+			if(((x+1 < wds.length) && (wds[x+1].match(/^\d/)) && ((x+1+singles)%2>0)) || (((x+1+singles)%2>0) && (x+1 == wds.length))){
 				//this line is odd
 				wds[x] = "###" + wds[x];
+				singles++;
 			}
 		}
 	
