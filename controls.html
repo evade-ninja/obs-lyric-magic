@@ -38,6 +38,16 @@
 		$("#lindex").html(index + "/" + lyrics.length);
 	}
 
+	function deleteSong(){
+		var s = $("#slots").val();
+		localStorage.removeItem(s);
+
+		loadSlots();
+		$("#slots").val(s);
+		load();
+
+	} 
+
 	function save(){
 		//console.log($("#slots").val());
 
@@ -253,6 +263,8 @@
 		<textarea id="words" rows="5"></textarea>
 		<button onclick="save();" class="success">Save</button>
 		<button onclick="load();" class="warning">Load</button>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<button onclick="deleteSong();" class="danger">Delete</button>
 	</div>
 	<div>
 	<span id="lindex">0/0</span>
