@@ -36,6 +36,7 @@
 			}
 		}
 		$("#lindex").html(index + "/" + lyrics.length);
+		$("#preview").html(lyrics[0]);
 	}
 
 	function deleteSong(){
@@ -188,18 +189,24 @@
 			index = 0;
 			//index++;
 			$("#lindex").html(index + "/" + lyrics.length);
+			$("#preview").html(lyrics[1]);
 			return;
 		}
 
-		if(index >= lyrics.length){
+		if(index == lyrics.length){
 			//time to hide!
 			mindcontrol.postMessage({'action':'hide'});
 			return;
 		}
-
+		if(index+1 >= lyrics.length){
+			$("#preview").html("&nbsp;");
+		}else{
+			$("#preview").html(lyrics[index+2]);
+		}
 		index++;
 		mindcontrol.postMessage({'action':'update_title','text': lyrics[index]});
 		$("#lindex").html(index + "/" + lyrics.length);
+		
 	}
 	
 	function sendLyricBack(){
@@ -208,14 +215,18 @@
 			mindcontrol.postMessage({'action':'update_title','text': lyrics[index]});
 			mindcontrol.postMessage({'action':'show'});
 			$("#lindex").html(index + "/" + lyrics.length);
+			$("#preview").html("&nbsp;");
 			return;
 		}
 
 		if(index <= -1){
 			//time to hide!
 			mindcontrol.postMessage({'action':'hide'});
+			$("#preview").html(lyrics[0]);
 			return;
 		}
+
+		$("#preview").html(lyrics[index]);
 
 		index--;
 		mindcontrol.postMessage({'action':'update_title','text': lyrics[index]});
@@ -261,26 +272,36 @@
 		<div class="input-group"><input type="text" id="title" name="title"></div>
 		<label for="words" name="words">Lyrics:</label>
 		<textarea id="words" rows="5"></textarea>
+	</div>
+	<div class="input-group"style="margin-top: 15px;">
 		<button onclick="save();" class="success">Save</button>
 		<button onclick="load();" class="warning">Load</button>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		<button onclick="deleteSong();" class="danger">Delete</button>
-	</div>
-	<div>
-	<span id="lindex">0/0</span>
-	
-	</div>
-	<div class="input-group">
-		<button onclick="sendLyricBack();" class="danger bigger">PREVIOUS</button>
-		<button onclick="sendLyric();" class="primary bigger">ADVANCE</button>
-	</div>
-
-	<div class="input-group" style="margin-top: 30px;">
+		<button onclick="clearStorage();" class="danger" style="display:none;">CLEAR</button>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		<button onclick="mindcontrol.postMessage({'action':'hide'});" class="danger">Force Hide</button>
 		<button onclick="mindcontrol.postMessage({'action':'show'});" class="primary">Force Show</button>
 	</div>
 
-	<button onclick="clearStorage();" class="danger" style="display:none;">CLEAR</button>
+	<div class="input-group">
+		<button onclick="sendLyricBack();" class="danger bigger">PREVIOUS</button>
+		<button onclick="sendLyric();" class="primary bigger">ADVANCE</button>
+		&nbsp;&nbsp;
+		<span id="lindex">0/0</span>
+	</div>
+
+	<div class="input-group" style="margin-top: 30px;">
+	
+		<div id="preview">
+			&nbsp;
+		</div>
+	</div>
+
+
+	
+
+
 	
 
 	</body>
