@@ -83,3 +83,12 @@ button:hover.warning {
     border-color: #ffc107;;
 }
 
+#preview {
+    display: flex;
+	justify-content: center;
+	align-items: center;
+    background-color: rgba(50,50,50,.75);
+	font-size: 2em;
+	color: white;
+	text-align: center;
+}
