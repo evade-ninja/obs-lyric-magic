@@ -56,7 +56,8 @@
 
 		var lyr = $("#words").val();
 
-		lyr = lyr.replace(/\n\n\s+/g,"\n");
+		lyr = lyr.replace(/\n\n\s*/g,"\n");
+		lyr = lyr.replace(/\r\n\r\n\s*/g,"\n");
 		lyr = lyr.replace(/#/g, "");
 		lyr = lyr.trim();
 		
