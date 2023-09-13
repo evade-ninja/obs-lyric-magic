@@ -18,21 +18,81 @@
 </body>
 
 <script type="text/javascript">
-const mindcontrol = new BroadcastChannel('obs-lyrics');
+	const mindcontrol = new BroadcastChannel('obs-lyrics');
+	var lyrics = [];
+	var index = -1;
+	var lines = 0;
 
-mindcontrol.onmessage = (messageEvent) => {
+	function next_line(){
+		if(index === -1){
+			// Nothing is shown currently.
+			index = 0;
+			$("#lyric-panel").html(lyrics[index]);
+			$("#lyric-panel").fadeIn(400);
+		}else if(index === lines){
+			// This was the last line!
+			index++;
+			$("#lyric-panel").fadeOut(400);
+		}else if(index > lines){
+			// do nothing!
+		}else{
+			index++;
+			$("#lyric-panel").html(lyrics[index]);
+		}
+		mindcontrol.postMessage({ 'action': 'next' });
+	}
+
+	function prev_line(){
+		if (index === -1) {
+			// Nothing is shown currently - do nothing
+		} else if (index === 0){
+			// We should hide now
+			$("#lyric-panel").fadeOut(400);
+			index = -1;
+		} else if (index === lines+1) {
+			// Go back!
+			index--;
+			$("#lyric-panel").html(lyrics[index]);
+			$("#lyric-panel").fadeIn(400);
+		} else {
+			index--;
+			$("#lyric-panel").html(lyrics[index]);
+		}
+		mindcontrol.postMessage({ 'action': 'prev' });
+	}
+
+	mindcontrol.onmessage = (messageEvent) => {
 	//alert(messageEvent.data.action);
-    if (messageEvent.data.action === 'update_title') {
-      //alert(messageEvent.data.text); 
-	  $("#lyric-panel").html(messageEvent.data.text);
-    }
-	if (messageEvent.data.action === 'hide') {
-		$("#lyric-panel").fadeOut(400);
-	}
-	if (messageEvent.data.action === 'show') {
-		$("#lyric-panel").fadeIn(400);
-	}
-  }
+		if (messageEvent.data.action === 'update_title') {
+			//alert(messageEvent.data.text); 
+		$("#lyric-panel").html(messageEvent.data.text);
+		}
+		if (messageEvent.data.action === 'hide') {
+			$("#lyric-panel").fadeOut(400);
+		}
+		if (messageEvent.data.action === 'show') {
+			$("#lyric-panel").fadeIn(400);
+		}
+		if (messageEvent.data.action === 'load'){
+			lyrics = messageEvent.data.lyrics;
+			lines = messageEvent.data.lyrics.length;
+			index = -1;
+		}
+		if (messageEvent.data.action === 'next'){
+			next_line();
+		}
+		if (messageEvent.data.action === 'prev') {
+			prev_line();
+		}
+	};
+
+  window.addEventListener('lyr_next', function (event) {
+		next_line();
+	});
+
+	window.addEventListener('lyr_prev', function (event) {
+		prev_line();
+	});
 
 </script>
 </html>
