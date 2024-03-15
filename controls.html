@@ -64,6 +64,8 @@
 		lyr = lyr.replace(/#/g, "");
 		lyr = lyr.trim();
 		
+		/*
+		Chorus blocks are now repeated
 		//find the chorus block
 
 		var choruspos = -1;
@@ -84,8 +86,8 @@
 
 			lyr = lyr + chorus[1];
 		}
-
-		lyr = lyr.replace("[Chorus]\n","");
+		*/
+		lyr = lyr.replaceAll("[Chorus]\n","");
 		lyr = lyr.trim();
 		//console.log(lyr);
 		//return;
