@@ -92,3 +92,22 @@ button:hover.warning {
 	color: white;
 	text-align: center;
 }
+
+#song-select {
+    display: flex;
+    align-items: center;
+}
+
+#song-select i{
+    margin-right: 8px;
+}
+
+#song-select-panel{
+    align-items: center;
+}
+
+.btn-toolbar {
+    margin-top: 8px;
+    margin-bottom: 8px;
+
+}
