@@ -18,12 +18,17 @@ var selected_song = 0;
 var lyrics = [];
 var index = -1;
 
-function ingest() {
-   words = $("#words").val().split("\n");
+function loadHymn() {
+
+   let song = $("#song-selector").val();
+   $("#song-title").html(songs[song].title);
+   $("#song").show();
+
+   words = songs[song].lyrics.split("\n");
    //alert(lyrics.length);
    index = -1
 
-   lyrics = [$("#title").val()];
+   lyrics = [songs[song].title];
 
    for (let x = 0; x < words.length; x) {
       if (words[x].startsWith("###")) {
@@ -41,138 +46,27 @@ function ingest() {
    $("#preview").html(lyrics[0]);
 }
 
+function unload(){
+   lyrics = [];
+   index = -1;
+   $("#song").hide();
+}
+
 function deleteSong() {
-   var s = $("#slots").val();
-   localStorage.removeItem(s);
-
-   loadSlots();
-   $("#slots").val(s);
-   load();
-
+   songs.splice(selected_song, 1);
+   localStorage.setItem("songs", JSON.stringify(songs));
+   populateSongLists();
 }
 
-function save() {
-   //console.log($("#slots").val());
-
-   var lyr = $("#words").val();
-
-   lyr = lyr.replace(/\n\n\s*/g, "\n");
-   lyr = lyr.replace(/\r\n\r\n\s*/g, "\n");
-   lyr = lyr.replace(/#/g, "");
-   lyr = lyr.trim();
-
-   /*
-   Chorus blocks are now repeated
-   //find the chorus block
-
-   var choruspos = -1;
-   choruspos = lyr.indexOf("[Chorus]");
-   if(choruspos > -1){
-      //we have a chorus!
-      var chorus = /\[Chorus\](.*?)\d/s.exec(lyr);
-      console.log(chorus[1]);
-
-      var verses = [];
-
-      for(let i = 3; i < 10; i++){
-         var vpos = lyr.indexOf("" + i);
-         if(vpos > 0){
-            lyr = lyr.replace("" + i, chorus[1].trim() + "\n" + i);
-         }
-      }
-
-      lyr = lyr + chorus[1];
-   }
-   */
-   lyr = lyr.replaceAll("[Chorus]\n", "");
-   lyr = lyr.trim();
-   //console.log(lyr);
-   //return;
-
-   var l2 = [];
-   l2 = lyr.split("\n");
-   var wds = [];
-   //lines = 0;
-   for (var i = 0; i < l2.length; i++) {
-      //console.log("Line" + i);
-      let item = l2[i];
-      if (item.length > 40) {
-         //split into two
-
-         //find the , or ; in the middle of the line
-         var cpos = item.indexOf(",", (item.length / 2) - 3);
-         var semipos = item.indexOf(";", (item.length / 2) - 6);
-         var spos = item.indexOf(" ", (item.length / 2) - 3);
-
-         var knife = item.length;
-         if (semipos > 0 && semipos < item.length * 0.75) {
-            knife = semipos + 1;
-         } else if (cpos > 0 && cpos < item.lengthc * 0.75) {
-            knife = cpos + 1;
-         } else {
-            knife = spos;
-         }
-
-         //console.log("Line: " + i + " " + l2[i]);
-         //lines++;
-         wds.push(item.slice(0, knife));
-         wds.push(item.slice(knife, item.length));
-         //lines++;
-         //console.log(l2[i+1]);
-         /*if(i + 1 < l2.length && (l2[i+1].match(/^\d/)) && (lines%2 > 0)){
-            console.log("next line is new verse and is odd");
-            wds.push("###1" + item.slice(knife,item.length));		 
-         }
-         else{
-            //lines++;					
-            wds.push(item.slice(knife,item.length));
-         }*/
-
-      } else {
-         //otherwise keep as is
-         //lines++;
-         //console.log("Intact Line: " + i + " " + l2[i]);
-
-         wds.push(item);
-         /*if((i+1 < l2.length) && (l2[i+1].match(/^\d/)) &&  (lines%2 > 0)){
-            console.log("next line is new verse and is odd");
-            wds.push("###2" + item.slice(knife,item.length));
-         }
-         else if((i+1 == l2.length) && (lines%2 > 0)){
-            wds.push("###3" + item.slice(knife,item.length));
-         }
-         else
-         {
-            wds.push(item);
-         }*/
-      }
-   }
-   var singles = 0;
-   for (var x = 0; x < wds.length; x++) {
-      console.log(x + "/" + wds[x] + " " + (x + 1 + singles) % 2);
-      if (((x + 1 < wds.length) && (wds[x + 1].match(/^\d/)) && ((x + 1 + singles) % 2 > 0)) || (((x + 1 + singles) % 2 > 0) && (x + 1 == wds.length))) {
-         //this line is odd
-         wds[x] = "###" + wds[x];
-         singles++;
-      }
-   }
-
-   $("#words").val(wds.join("\n"));
-
-
-
-
-   var s = $("#slots").val();
-
-   localStorage.setItem($("#slots").val(), JSON.stringify({ 'title': $("#title").val(), 'lyrics': $("#words").val() }));
-
-   loadSlots();
-   $("#slots").val(s);
-   ingest();
-
+function save(){
+   songs[selected_song].title = $("#title").val()
+   songs[selected_song].lyrics = $("#words").val()
+   localStorage.setItem("songs", JSON.stringify(songs));
+   populateSongLists();
+   $("#edit_hymns").val(selected_song);
 }
 
-function load() {
+/* function load() {
    var x = $("#slots").val();
    var s = JSON.parse(localStorage.getItem(x));
    if (s) {
@@ -183,7 +77,7 @@ function load() {
       $("#title").val("");
       $("#words").val("");
    }
-}
+} */
 
 function sendLyric() {
    if (index == -1) {
@@ -237,7 +131,7 @@ function sendLyricBack() {
 }
 
 function loadSlots() {
-
+/*
    $("#slots").html("");
    for (let x = 1; x < 11; x++) {
 
@@ -249,6 +143,12 @@ function loadSlots() {
       }
 
    }
+      */
+   songs = JSON.parse(localStorage.getItem("songs"));
+   if(!songs){
+      songs = [];
+   }
+   populateSongLists();
 }
 
 function next_line() {
@@ -289,6 +189,11 @@ function clearStorage() {
    localStorage.clear();
 }
 
+function closeManage(){
+   $("#manage").hide();
+   $("#edit").hide();
+}
+
 function processLyrics(){
    var lyr = $("#words").val();
 
@@ -297,11 +202,53 @@ function processLyrics(){
    lyr = lyr.replace(/\n\n\s*/g, "\n");
    lyr = lyr.replace(/\r\n\r\n\s*/g, "\n");
    lyr = lyr.replace(/#/g, "");
+   lyr = lyr.replace(/(\d\.)\n/gm, "$1 ");
    lyr = lyr.trim();
 
+   var l2 = [];
+   l2 = lyr.split("\n");
+   var wds = [];
+   //lines = 0;
+   for (var i = 0; i < l2.length; i++) {
+      //console.log("Line" + i);
+      let item = l2[i];
+      if (item.length > 40) {
+         // line is too long - split into two
 
+         //find the , or ; in the middle of the line to split it
+         var cpos = item.indexOf(",", (item.length / 2) - 3);
+         var semipos = item.indexOf(";", (item.length / 2) - 6);
+         var spos = item.indexOf(" ", (item.length / 2) - 3);
 
+         var knife = item.length;
+         if (semipos > 0 && semipos < item.length * 0.75) {
+            knife = semipos + 1;
+         } else if (cpos > 0 && cpos < item.lengthc * 0.75) {
+            knife = cpos + 1;
+         } else {
+            knife = spos;
+         }
+         wds.push(item.slice(0, knife));
+         wds.push(item.slice(knife, item.length));
+      } else {
+         // line is fine - keep as is
+         wds.push(item);
+      }
+   }
+
+   // Look for "sinlges" by checking to see if the following line starts with a number
+   var singles = 0;
+   for (var x = 0; x < wds.length; x++) {
+      console.log(x + "/" + wds[x] + " " + (x + 1 + singles) % 2);
+      if (((x + 1 < wds.length) && (wds[x + 1].match(/^\d/)) && ((x + 1 + singles) % 2 > 0)) || (((x + 1 + singles) % 2 > 0) && (x + 1 == wds.length))) {
+         //this line is odd
+         wds[x] = "###" + wds[x];
+         singles++;
+      }
+   }
    
+   // Put the processed array into the textarea
+   $("#words").val(wds.join("\n"));
 }
 
 function populateSongLists(){
@@ -314,10 +261,11 @@ function populateSongLists(){
    }
 }
 
-function editSong(song){
-   $("#edit_hymn_panel").show();
-   $("#title").val(songs[song].title);
-   $("#words").val(songs[song].lyrics);
+function editSong(){
+   $("#edit").show();
+   selected_song = parseInt($("#edit_hymns").val());
+   $("#title").val(songs[selected_song].title);
+   $("#words").val(songs[selected_song].lyrics);
 }
 
 function newSong(){
@@ -327,5 +275,38 @@ function newSong(){
          "lyrics":""
       }) - 1;
    populateSongLists();
-   editSong(selected_song);
+   $("#edit_hymns").val(selected_song);
+   $("#edit").show();
+   editSong();
+}
+
+function moveUp(){
+   selected_song = parseInt($("#edit_hymns").val());
+   if(selected_song > 0){
+      let s = songs[selected_song];
+      songs.splice(selected_song, 1);
+      songs.splice(selected_song-1, 0, s);
+      populateSongLists();
+      selected_song -= 1;
+      $("#edit_hymns").val(selected_song);
+      localStorage.setItem("songs", JSON.stringify(songs));
+   }
+}
+
+function moveDown() {
+   selected_song = parseInt($("#edit_hymns").val());
+   if (selected_song < songs.length) {
+      let s = songs[selected_song];
+      songs.splice(selected_song, 1);
+
+      if(selected_song+1 == songs.length){
+         songs.push(s);
+      }else{
+         songs.splice(selected_song + 1, 0, s);
+      }
+      selected_song = selected_song + 1;
+      populateSongLists();
+      localStorage.setItem("songs", JSON.stringify(songs));
+   }
+   $("#edit_hymns").val(selected_song);
 }
